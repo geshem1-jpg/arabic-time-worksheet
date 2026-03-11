@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דף עבודה אינטראקטיבי בערבית: השעה והזמנים</title>
+    <style>
+        :root { --primary: #1a73e8; --bg: #f8f9fa; --text: #3c4043; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1, h2, h3 { color: var(--primary); text-align: center; }
+        .instruction { background: #e8f0fe; padding: 15px; border-right: 5px solid var(--primary); border-radius: 5px; margin: 20px 0; font-weight: bold; }
+        
+        /* שעון אנלוגי אינטראקטיבי */
+        .clock-section { display: flex; flex-direction: column; align-items: center; background: #fff; padding: 20px; border: 2px solid #eee; border-radius: 15px; margin-bottom: 40px; }
+        .clock { width: 280px; height: 280px; border: 10px solid #333; border-radius: 50%; position: relative; background: #fff; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
+        .clock::after { content: ''; width: 12px; height: 12px; background: #e74c3c; border-radius: 50%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10; }
+        .hand { position: absolute; bottom: 50%; left: 50%; transform-origin: bottom; border-radius: 5px; transform: translateX(-50%); transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .hour-hand { width: 8px; height: 70px; background: #333; z-index: 5; }
+        .min-hand { width: 5px; height: 110px; background: #666; z-index: 4; }
+        .number { position: absolute; width: 100%; height: 100%; text-align: center; font-weight: bold; font-size: 1.2rem; padding: 12px; box-sizing: border-box; }
+
+        .controls { width: 100%; max-width: 500px; margin-top: 20px; background: #f1f3f4; padding: 20px; border-radius: 10px; }
+        .time-display { font-size: 1.5rem; font-weight: bold; color: var(--primary); margin: 15px 0; background: #e8f0fe; padding: 10px; border-radius: 8px; width: 100%; text-align: center; }
+
+        /* מילות השיר */
+        .lyrics { background: #fffef0; padding: 20px; border: 1px dashed #d4af37; border-radius: 10px; margin: 20px 0; text-align: center; line-height: 1.8; font-size: 1.1rem; }
+
+        /* תרגילים */
+        .exercise { margin-bottom: 40px; padding: 20px; border: 1px solid #eee; border-radius: 10px; }
+        .question-row { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        input[type="text"], input[type="number"] { padding: 10px; border: 1px solid #dadce0; border-radius: 4px; font-size: 16px; width: 300px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #dadce0; padding: 12px; text-align: center; }
+        th { background: #f1f3f4; }
+        iframe { width: 100%; height: 450px; border-radius: 10px; margin: 20px 0; }
+
+        /* אזור סיום וקוד */
+        .quiz-section { background: #fafafa; padding: 30px; border-radius: 15px; border: 2px solid #eee; margin-top: 30px; text-align: center; }
+        .btn { padding: 15px 30px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 18px; font-weight: bold; transition: 0.3s; }
+        .btn:hover { background: #1557b0; }
+        .code-output { display: none; background: #e6fffa; border: 2px solid #38a169; padding: 20px; border-radius: 10px; margin-top: 20px; }
+        .code-display { font-family: monospace; background: #eee; padding: 15px; border: 1px solid #333; margin: 15px 0; font-size: 1.1rem; display: block; word-break: break-all; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>אלסִיעָה וּאִלְאַוְקאת - השעה והזמנים</h1>
+
+    <div class="clock-section">
+        <h2>דגם שעון אינטראקטיבי</h2>
+        <p class="instruction">כווננו את השעון כדי לראות את התעתיק בערבית:</p>
+        <div class="clock">
+            <div class="hand hour-hand" id="hourHand"></div>
+            <div class="hand min-hand" id="minHand"></div>
+            <div class="number" style="transform: rotate(30deg)">1</div>
+            <div class="number" style="transform: rotate(60deg)">2</div>
+            <div class="number" style="transform: rotate(90deg)">3</div>
+            <div class="number" style="transform: rotate(120deg)">4</div>
+            <div class="number" style="transform: rotate(150deg)">5</div>
+            <div class="number" style="transform: rotate(180deg)">6</div>
+            <div class="number" style="transform: rotate(210deg)">7</div>
+            <div class="number" style="transform: rotate(240deg)">8</div>
+            <div class="number" style="transform: rotate(270deg)">9</div>
+            <div class="number" style="transform: rotate(300deg)">10</div>
+            <div class="number" style="transform: rotate(330deg)">11</div>
+            <div class="number" style="transform: rotate(0deg)">12</div>
+        </div>
+        <div class="controls">
+            <input type="range" id="hourSlider" min="1" max="12" value="3" oninput="updateClock()">
+            <input type="range" id="minSlider" min="0" max="55" step="5" value="0" oninput="updateClock()">
+        </div>
+        <div class="time-display" id="arabicTimeOutput">א(ל)סִיעָה תַלַאתֶה בּ(אל)זַבּט</div>
+    </div>
+
+    <div class="exercise">
+        <h3>1. קַדִישׁ (אל)סִיעַה?</h3>
+        <div class="question-row">השעה 4:15: <input type="text" id="ex1_1" placeholder="תעתיק"></div>
+        <div class="question-row">השעה 2:35: <input type="text" id="ex1_2"></div>
+    </div>
+
+    <div class="exercise">
+        <h3>2. סדרו את השעות (1-6)</h3>
+        <div class="question-row"><input type="number" id="ex2_1" style="width:60px"> א(ל)סִיעָה וַאחְדָה</div>
+        <div class="question-row"><input type="number" id="ex2_2" style="width:60px"> א(ל)סִיעָה וַאחְדָה וּרֶבַּע</div>
+    </div>
+
+    <div class="exercise">
+        <h3>משימה 7: השיר "אלבית (א)לעתיק"</h3>
+        <div class="lyrics">
+            רְיַאד וּוַלִיד טִלְעוּ עַ-טַרִיק... א(ל)סיעה תַלַאתֶה פִי (א)לְבֵּית (א)לְעַתִיק...<br>
+            קַדִישׁ (אל)סִיעַה? תִנְתֵין וּנֵס וּחַ'מְסָה... שֶׁפְת רְיַאד וּוַלִיד טְלְעוּ מִן (א)לְמַדְרַסֶה [cite: 81-109]
+        </div>
+        <iframe src="https://www.youtube.com/embed/AAfWu3TbgFo"></iframe>
+        <table>
+            <tr><th>השעה</th><th>מעשי ריאד ווליד [cite: 110-111]</th></tr>
+            <tr><td>2:35</td><td><input type="text" id="act1"></td></tr>
+            <tr><td>3:00</td><td><input type="text" id="act2"></td></tr>
+        </table>
+    </div>
+
+    <div class="exercise">
+        <h3>8. כתבו בתעתיק</h3>
+        <div class="question-row">השעה שלוש בדיוק: <input type="text" id="ex8_1"></div>
+        <div class="question-row">הדלת סגורה: <input type="text" id="ex8_2"></div>
+    </div>
+
+    <div class="quiz-section">
+        <input type="text" id="studentName" placeholder="הקלידו שם מלא" style="width: 80%; padding: 10px; margin-bottom: 20px;">
+        <button class="btn" onclick="generateClassroomCode()">סיום דף עבודה וקבלת קוד</button>
+        
+        <div id="codeArea" class="code-output">
+            <h3>כל הכבוד! דף העבודה הושלם.</h3>
+            <p>העתיקו את הקוד הבא והדביקו אותו ב<b>תגובה פרטית</b> בגוגל קלאסרום:</p>
+            <div class="code-display" id="finalCode"></div>
+            <button class="btn" onclick="copyToClipboard()" style="background:#38a169;">העתק קוד</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const hoursArr = ["", "וַאחַדֶה", "תִנְתֵין", "תַלַאתֶה", "אַרְבַּעַה", "חַ'מְסֶה", "סִתֶה", "סַבְּעַה", "תַמַאנְיָה", "תִסְעַה", "עַשַׁרָה", "חְדַעְשׁ", "תְנַעְשׁ"];
+
+    function updateClock() {
+        let h = parseInt(document.getElementById('hourSlider').value);
+        let m = parseInt(document.getElementById('minSlider').value);
+        document.getElementById('hourHand').style.transform = `translateX(-50%) rotate(${(h*30)+(m*0.5)}deg)`;
+        document.getElementById('minHand').style.transform = `translateX(-50%) rotate(${m*6}deg)`;
+        
+        let text = "א(ל)סִיעָה ";
+        if (m === 0) text += hoursArr[h] + " בּ(אל)זַבּט";
+        else if (m === 15) text += hoursArr[h] + " וּרֶבַּע";
+        else if (m === 30) text += hoursArr[h] + " וּנֵס";
+        else text += hoursArr[h] + " ו-" + m + " דקות";
+        document.getElementById('arabicTimeOutput').innerText = text;
+    }
+
+    function generateClassroomCode() {
+        const name = document.getElementById('studentName').value.trim();
+        if (!name) { alert("חובה להזין שם!"); return; }
+
+        let score = 0;
+        // חישוב ציון בסיסי לדוגמה
+        if(document.getElementById('ex1_1').value.includes("ארבעה ורבע")) score += 25;
+        if(document.getElementById('ex8_2').value.includes("מסכרה")) score += 25;
+        if(document.getElementById('act2').value.includes("בית") || document.getElementById('act2').value.includes("עתיק")) score += 25;
+        score += 25; // נקודות על השלמת הדף
+
+        const code = `RESULT | דף_עבודה | שם: ${name} | ציון: ${score} | מזהה: ${Math.floor(1000+Math.random()*9000)}`;
+        
+        document.getElementById('finalCode').innerText = code;
+        document.getElementById('codeArea').style.display = 'block';
+        window.scrollTo(0, document.body.scrollHeight);
+    }
+
+    function copyToClipboard() {
+        const codeText = document.getElementById('finalCode').innerText;
+        navigator.clipboard.writeText(codeText).then(() => {
+            alert("הקוד הועתק! הדביקו אותו בגוגל קלאסרום.");
+        });
+    }
+
+    updateClock();
+</script>
+</body>
+</html>
